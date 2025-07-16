@@ -1,0 +1,337 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Home Library API
+  description: Cloud system for home library
+
+components:
+  parameters:
+    bookId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Book Id
+
+    authorId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Author Id
+
+    page:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        authorId:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BookStatus'
+
+    BookInput:
+      type: object
+      required: [title, authorId]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        authorId:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BookStatus'
+
+    BookPatchInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        authorId:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BookStatus'
+
+    BookStatus:
+      type: string
+      enum: [Owned, Read, Reading, Wishlist]
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    AuthorInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    
+    AuthorPatchInput:
+      type: object
+      properties:
+        name:
+          type: string
+
+
+paths:
+  /books:
+    get:
+      summary: Get paginated books
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+      responses:
+        '200':
+          description: Paginated list of books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Book'
+                  total:
+                    type: integer
+                    description: Total number of items
+                  page:
+                    type: integer
+                    description: Current page number
+                  pageSize:
+                    type: integer
+                    description: Number of items per page
+    post:
+      summary: Add new Book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Book created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid input
+
+  /books/{id}:
+    get:
+      summary: Get Book by Id
+      parameters:
+        - $ref: '#/components/parameters/bookId'
+      responses:
+        '200':
+          description: Book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+    put:
+      summary: Put Book
+      parameters:
+        - $ref: '#/components/parameters/bookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '200':
+          description: Updated Book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid input
+    patch:
+      summary: Patch Book
+      parameters:
+        - $ref: '#/components/parameters/bookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookPatchInput'
+      responses:
+        '200':
+          description: Book patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid input
+        '404':
+          description: Book not found
+    delete:
+      summary: Delete Book
+      parameters:
+        - $ref: '#/components/parameters/bookId'
+      responses:
+        '204':
+          description: Book deleted
+
+
+
+  /authors:
+    get:
+      summary: Get paginated Authors
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+      responses:
+        '200':
+          description: Paginated Authors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Author'
+                  total:
+                    type: integer
+                    description: Total number of items
+                  page:
+                    type: integer
+                    description: Current page number
+                  pageSize:
+                    type: integer
+                    description: Number of items per page
+    post:
+      summary: Add Author
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '201':
+          description: Author created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Invalid input
+
+  /authors/{id}:
+    get:
+      summary: Get Author by Id
+      parameters:
+        - $ref: '#/components/parameters/authorId'
+      responses:
+        '200':
+          description: Author
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: Author not found
+    put:
+      summary: Put Author
+      parameters:
+        - $ref: '#/components/parameters/authorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '200':
+          description: Author updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Invalid input
+    patch:
+      summary: Patch Author
+      parameters:
+        - $ref: '#/components/parameters/authorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorPatchInput'
+      responses:
+        '200':
+          description: Author patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Invalid input
+        '404':
+          description: Author not found
+
+    delete:
+      summary: Delete Author
+      parameters:
+        - $ref: '#/components/parameters/authorId'
+      responses:
+        '204':
+          description: Author deleted
