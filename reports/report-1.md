@@ -25,8 +25,16 @@
 
 ### Event Storming
 
-![Event Storming](./docs/images/event-storming.jpg)
+![Event Storming](../docs/images/event-storming.jpg)
 
 ### Context Map
 
-![Context Map](./docs/images/context-map.jpg)
+![Context Map](../docs/images/context-map.jpg)
+
+### [Api Specification](../docs/openapi.yaml)
+
+### Code Presentation
+
+User and Author modules each containing repository, service and controller for crud operations on entities stored in Map data structures
+
+### Висновки
