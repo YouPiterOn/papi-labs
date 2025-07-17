@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { DeadLetterQueue } from "./dead-letter-queue";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       },
     ]),
   ],
-  exports: [ClientsModule]
+  exports: [ClientsModule, DeadLetterQueue],
+  providers: [DeadLetterQueue]
 })
 export class RabbitMQModule {}
