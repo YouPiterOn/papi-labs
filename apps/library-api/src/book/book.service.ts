@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,12 +11,15 @@ import { PageDto } from 'src/common/dto/page.dto';
 import { BookResponseDto } from './dto/book-response.dto';
 import { AuthorRepository } from 'src/author/repository/author.repository';
 import { BookFiltersDto } from './dto/book-filters.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { BookOutboxRepository } from './repository/book-outbox.repository';
 
 @Injectable()
 export class BookService {
   constructor(
     private readonly bookRepository: BookRepository,
     private readonly authorRepository: AuthorRepository,
+    private readonly outboxRepository: BookOutboxRepository
   ) {}
 
   async getPage(params: {
@@ -32,7 +36,11 @@ export class BookService {
     if (!author) {
       throw new BadRequestException('Author does not exist');
     }
-    return this.bookRepository.create(dto);
+    const created = await this.bookRepository.create(dto);
+
+    this.outboxRepository.post({ pattern: 'book.created', data: created });
+
+    return created;
   }
 
   async getById(id: string): Promise<BookResponseDto> {
@@ -52,6 +60,9 @@ export class BookService {
     if (!updated) {
       throw new NotFoundException('Book not found');
     }
+
+    this.outboxRepository.post({ pattern: 'book.updated', data: updated });
+
     return updated;
   }
 
@@ -66,6 +77,9 @@ export class BookService {
     if (!patched) {
       throw new NotFoundException('Book not found');
     }
+
+    this.outboxRepository.post({ pattern: 'book.patched', data: patched });
+
     return patched;
   }
 
