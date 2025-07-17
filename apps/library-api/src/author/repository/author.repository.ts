@@ -42,7 +42,10 @@ export class AuthorRepository {
     const author = this._storage.get(id);
     if (!author) return null;
 
-    const updated: AuthorEntity = { ...author, ...dto };
+    const updated: AuthorEntity = {
+      id: author.id,
+      name: dto.name
+    };
     this._storage.set(updated.id, updated);
     return updated;
   }
@@ -51,7 +54,10 @@ export class AuthorRepository {
     const author = this._storage.get(id);
     if (!author) return null;
 
-    const patched: AuthorEntity = { ...author, ...dto };
+    const patched: AuthorEntity = {
+      id: author.id,
+      name: dto.name || author.name
+    };
     this._storage.set(patched.id, patched);
     return patched;
   }

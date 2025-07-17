@@ -58,7 +58,13 @@ export class BookRepository {
 
     if (!book) return null;
 
-    const updated = { ...dto, ...book };
+    const updated: BookEntity = {
+      id: book.id,
+      title: dto.title,
+      description: dto.description,
+      authorId: dto.authorId,
+      publishedDate: dto.publishedDate
+    };
 
     this._storage.set(updated.id, updated);
 
@@ -70,7 +76,13 @@ export class BookRepository {
 
     if (!book) return null;
 
-    const patched = { ...dto, ...book };
+    const patched: BookEntity = {
+      id: book.id,
+      title: dto.title || book.title,
+      description: dto.description || book.description,
+      authorId: dto.authorId || book.authorId,
+      publishedDate: dto.publishedDate || book.publishedDate
+    };
 
     this._storage.set(patched.id, patched);
 
