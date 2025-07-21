@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { BookEntity } from "../entity/book.entity";
-import { BookResponseDto } from "../dto/book-response.dto";
 import { BookOutboxDto } from "../dto/book-outbox.dto";
 
 @Injectable()

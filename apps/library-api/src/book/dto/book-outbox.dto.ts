@@ -1,3 +1,4 @@
+import { AuthorResponseDto } from "src/author/dto/author-response.dto";
 import { BookStatus } from "../enum/book-status.enum";
 
 export class BookOutboxDto {
@@ -6,7 +7,7 @@ export class BookOutboxDto {
     id: string,
     title: string,
     description?: string,
-    authorId: string,
+    author?: AuthorResponseDto,
     publishedDate?: string,
     status?: BookStatus,
   }

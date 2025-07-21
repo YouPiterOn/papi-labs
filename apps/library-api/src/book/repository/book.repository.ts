@@ -5,16 +5,32 @@ import { BookDto } from '../dto/book.dto';
 import { v4 as uuid } from 'uuid';
 import { PatchBookDto } from '../dto/patch-book.dto';
 import { BookFiltersDto } from '../dto/book-filters.dto';
+import { AuthorRepository } from 'src/author/repository/author.repository';
+import { BookResponseDto } from '../dto/book-response.dto';
 
 @Injectable()
 export class BookRepository {
   private _storage = new Map<string, BookEntity>();
 
+  constructor(private readonly authorRepository: AuthorRepository) { }
+
+  private async toResponseDto(entity: BookEntity): Promise<BookResponseDto> {
+    const author = await this.authorRepository.findById(entity.authorId);
+    return {
+      id: entity.id,
+      title: entity.title,
+      description: entity.description,
+      author: author || undefined,
+      publishedDate: entity.publishedDate,
+      status: entity.status
+    };
+  }
+
   async findPage(
     page: number,
     pageSize: number,
     filters: BookFiltersDto,
-  ): Promise<PageDto<BookEntity>> {
+  ): Promise<PageDto<BookResponseDto>> {
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
 
@@ -32,7 +48,9 @@ export class BookRepository {
       books = books.filter((b) => b.authorId === filters.authorId);
     }
 
-    const content = books.slice(start, end);
+    const sliced = books.slice(start, end);
+
+    const content = await Promise.all(sliced.map(b => this.toResponseDto(b)));
 
     return {
       content,
@@ -42,18 +60,19 @@ export class BookRepository {
     };
   }
 
-  async create(dto: BookDto): Promise<BookEntity> {
+  async create(dto: BookDto): Promise<BookResponseDto> {
     const id = uuid();
     const newBook: BookEntity = { id, ...dto };
     this._storage.set(id, newBook);
-    return newBook;
+    return this.toResponseDto(newBook);
   }
 
-  async findById(id: string): Promise<BookEntity | null> {
-    return this._storage.get(id) ?? null;
+  async findById(id: string): Promise<BookResponseDto | null> {
+    const book = this._storage.get(id)
+    return book ? this.toResponseDto(book) : null;
   }
 
-  async update(id: string, dto: BookDto): Promise<BookEntity | null> {
+  async update(id: string, dto: BookDto): Promise<BookResponseDto | null> {
     const book = this._storage.get(id);
 
     if (!book) return null;
@@ -68,10 +87,10 @@ export class BookRepository {
 
     this._storage.set(updated.id, updated);
 
-    return updated;
+    return this.toResponseDto(updated);
   }
 
-  async patch(id: string, dto: PatchBookDto): Promise<BookEntity | null> {
+  async patch(id: string, dto: PatchBookDto): Promise<BookResponseDto | null> {
     const book = this._storage.get(id);
 
     if (!book) return null;
@@ -86,7 +105,7 @@ export class BookRepository {
 
     this._storage.set(patched.id, patched);
 
-    return patched;
+    return this.toResponseDto(patched);
   }
 
   async delete(id: string): Promise<boolean> {
