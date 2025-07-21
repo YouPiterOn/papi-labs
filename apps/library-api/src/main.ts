@@ -5,7 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import tracer from './tracer';
 
 async function bootstrap() {
-  tracer.start();
+  //tracer.start();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 

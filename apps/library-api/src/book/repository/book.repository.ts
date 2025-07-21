@@ -12,19 +12,7 @@ import { BookResponseDto } from '../dto/book-response.dto';
 export class BookRepository {
   private _storage = new Map<string, BookEntity>();
 
-  constructor(private readonly authorRepository: AuthorRepository) { }
-
-  private async toResponseDto(entity: BookEntity): Promise<BookResponseDto> {
-    const author = await this.authorRepository.findById(entity.authorId);
-    return {
-      id: entity.id,
-      title: entity.title,
-      description: entity.description,
-      author: author || undefined,
-      publishedDate: entity.publishedDate,
-      status: entity.status
-    };
-  }
+  constructor() { }
 
   async findPage(
     page: number,
@@ -48,9 +36,7 @@ export class BookRepository {
       books = books.filter((b) => b.authorId === filters.authorId);
     }
 
-    const sliced = books.slice(start, end);
-
-    const content = await Promise.all(sliced.map(b => this.toResponseDto(b)));
+    const content = books.slice(start, end);
 
     return {
       content,
@@ -62,14 +48,15 @@ export class BookRepository {
 
   async create(dto: BookDto): Promise<BookResponseDto> {
     const id = uuid();
-    const newBook: BookEntity = { id, ...dto };
-    this._storage.set(id, newBook);
-    return this.toResponseDto(newBook);
+    const created: BookEntity = { id, ...dto };
+    this._storage.set(id, created);
+    return created;
   }
 
   async findById(id: string): Promise<BookResponseDto | null> {
     const book = this._storage.get(id)
-    return book ? this.toResponseDto(book) : null;
+    if(!book) return null;
+    return book;
   }
 
   async update(id: string, dto: BookDto): Promise<BookResponseDto | null> {
@@ -87,7 +74,7 @@ export class BookRepository {
 
     this._storage.set(updated.id, updated);
 
-    return this.toResponseDto(updated);
+    return updated;
   }
 
   async patch(id: string, dto: PatchBookDto): Promise<BookResponseDto | null> {
@@ -105,7 +92,7 @@ export class BookRepository {
 
     this._storage.set(patched.id, patched);
 
-    return this.toResponseDto(patched);
+    return patched;
   }
 
   async delete(id: string): Promise<boolean> {

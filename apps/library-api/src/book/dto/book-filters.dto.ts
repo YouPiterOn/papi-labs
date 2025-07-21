@@ -3,17 +3,17 @@ import { IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class BookFiltersDto {
-  @Field()
+  @Field({ nullable: true })
   @IsOptional()
   @IsString()
   title?: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsOptional()
   @IsString()
   publishedDate?: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsOptional()
   @IsString()
   authorId?: string;

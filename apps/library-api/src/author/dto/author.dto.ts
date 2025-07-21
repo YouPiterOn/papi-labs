@@ -9,5 +9,5 @@ export class AuthorDto {
 
   @Field()
   @IsString()
-  countryName: string;
+  countryId: string;
 }

@@ -12,5 +12,6 @@ import { BookResolver } from './book.resolver';
   imports: [AuthorModule, RabbitMQModule],
   controllers: [BookController],
   providers: [BookService, BookRepository, BookOutboxRepository, BookOutboxProcessor, BookResolver],
+  exports: [BookService]
 })
 export class BookModule {}

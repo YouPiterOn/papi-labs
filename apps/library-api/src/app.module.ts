@@ -6,7 +6,7 @@ import { AuthorModule } from './author/author.module';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
@@ -14,12 +14,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     AuthorModule,
     RabbitMQModule,
     ScheduleModule.forRoot(),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: true,
-      subscriptions: {
-        'graphql-ws': true
-      },
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      autoSchemaFile: {
+        federation: 2
+      }
     })
   ],
   controllers: [AppController],

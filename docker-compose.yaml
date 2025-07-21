@@ -1,0 +1,26 @@
+services:
+  gateway:
+    build: ./apps/gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - LIBRARY_URL=http://library:3001/graphql
+      - COUNTRIES_URL=http://countries:3002/graphql
+    depends_on:
+      - library
+      - countries
+
+  library:
+    build: ./apps/library-api
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+
+  countries:
+    build: ./apps/country-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002

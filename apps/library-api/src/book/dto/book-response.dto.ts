@@ -1,8 +1,8 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Directive, Field, ID, ObjectType } from '@nestjs/graphql';
 import { BookStatus } from '../enum/book-status.enum';
-import { AuthorResponseDto } from 'src/author/dto/author-response.dto';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 export class BookResponseDto {
   @Field(() => ID)
   id: string;
@@ -14,7 +14,7 @@ export class BookResponseDto {
   description?: string;
 
   @Field()
-  author?: AuthorResponseDto;
+  authorId: string;
 
   @Field({ nullable: true })
   publishedDate?: string;

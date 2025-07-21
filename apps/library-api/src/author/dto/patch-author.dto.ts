@@ -11,5 +11,5 @@ export class PatchAuthorDto {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  countryName?: string;
+  countryId?: string;
 }
