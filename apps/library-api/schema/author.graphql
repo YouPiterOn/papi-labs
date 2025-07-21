@@ -1,0 +1,19 @@
+type Author {
+  id: ID!
+  name: String!
+}
+
+input AuthorInput {
+  name: String!
+}
+
+input AuthorPatchInput {
+  name: String
+}
+
+type AuthorPage {
+  items: [Author!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}

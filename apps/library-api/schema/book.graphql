@@ -1,0 +1,38 @@
+enum BookStatus {
+  Owned
+  Read
+  Reading
+  Wishlist
+}
+
+type Book {
+  id: ID!
+  title: String!
+  description: String
+  authorId: ID!
+  publishedDate: String
+  status: BookStatus
+}
+
+input BookInput {
+  title: String!
+  description: String
+  authorId: ID!
+  publishedDate: String
+  status: BookStatus
+}
+
+input BookPatchInput {
+  title: String
+  description: String
+  authorId: ID
+  publishedDate: String
+  status: BookStatus
+}
+
+type BookPage {
+  items: [Book]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
